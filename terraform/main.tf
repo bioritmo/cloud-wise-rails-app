@@ -75,7 +75,7 @@ resource "aws_eip" "eip_egress" {
 
 # NAT Gateway
 resource "aws_nat_gateway" "ngw_public" {
-  subnet_id = aws_subnet.subnet_public[0].id
+  subnet_id = values(aws_subnet.subnet_public)[0].id
   allocation_id = aws_eip.eip_egress.id
 
   tags = {
@@ -98,7 +98,7 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_subnet" "subnet_private_a" {
   vpc_id = aws_vpc.main.id
   availability_zone = data.aws_availability_zones.available.names[0]
-  cidr_block = local.subnet_private_block[0]
+  cidr_block = local.subnets_private[0]
 
   tags = {
     Name = "03-cfl-subnet-priv-${data.aws_availability_zones.available.names[0]}"
@@ -109,7 +109,7 @@ resource "aws_subnet" "subnet_private_a" {
 resource "aws_subnet" "subnet_private_b" {
   vpc_id = aws_vpc.main.id
   availability_zone = data.aws_availability_zones.available.names[1]
-  cidr_block = local.subnet_private_block[1]
+  cidr_block = local.subnets_private[1]
 
   tags = {
     Name = "03-cfl-subnet-priv-${data.aws_availability_zones.available.names[1]}"
@@ -122,7 +122,7 @@ resource "aws_route_table" "rt_private_a" {
   vpc_id = aws_vpc.main.id
 
   route {
-    cidr_block = "0.0.0.0"
+    cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.ngw_public.id
   }
 }
@@ -174,7 +174,7 @@ resource "aws_route_table" "rt_public" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_internet_gateway.igw.id
+    gateway_id = aws_internet_gateway.igw.id
   }
 }
 
