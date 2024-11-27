@@ -125,6 +125,10 @@ resource "aws_route_table" "rt_private_a" {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.ngw_public.id
   }
+
+  tags = {
+    Name = "03-cfl-rt-priv-${data.aws_availability_zones.available.names[0]}"
+  }
 }
 
 ### RT priv B
@@ -134,6 +138,10 @@ resource "aws_route_table" "rt_private_b" {
   route {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.ngw_public.id
+  }
+
+  tags = {
+    Name = "03-cfl-rt-priv-${data.aws_availability_zones.available.names[1]}"
   }
 }
 
@@ -175,6 +183,10 @@ resource "aws_route_table" "rt_public" {
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
+  }
+
+  tags = {
+    Name = "03-cfl-rt_public-${each.key}"
   }
 }
 
