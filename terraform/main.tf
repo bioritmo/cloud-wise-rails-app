@@ -11,12 +11,6 @@
 # -----------------------------------------------
 # terraform backend s3 - save tfstate
 # -----------------------------------------------
-# configure the aws provider
-# -----------------------------------------------
-# create a s3 bucket resource
-# -----------------------------------------------
-# create a dynamodb resource
-# -----------------------------------------------
 # create a vpc (eip, nat_gatway, internet_gatway)
 # -----------------------------------------------
 # create subnets
@@ -39,15 +33,6 @@
 #################################################
 # variables
 #################################################
-variable "region" {
-  type        = string
-  default     = "us-east-1"
-}
-
-variable "profile" {
-  type        = string
-  default     = "cloudwise"
-}
 
 variable "vpc_cidr_block" {
   type        = string
@@ -92,99 +77,11 @@ terraform {
   # terraform backend s3 - save tfstate
   #------------------------------------------------
   backend "s3" {
-    profile = "cloudwise"
+    profile = "personal-account"
     region = "us-east-1"
-    bucket = "group01-cloudwise-tfstate-workshop-terraform"
+    bucket = "group01-personal-account-tfstate-workshop-terraform"
     key = "terraform.tfstate"
     dynamodb_table = "terraform-locks"
-  }
-}
-
-#################################################
-# configure the aws provider
-#################################################
-
-provider "aws" {
-  region = var.region
-
-  default_tags {
-    tags = {
-      Project = "group01-workshop"
-      Managed = "group01-terraform"
-      Owner = "group01-cloud"
-      terraform = "group01-maintf"
-    }
-  }
-}
-
-#################################################
-# create a s3 bucket resource
-#################################################
-
-resource "aws_s3_bucket" "terraform_tfstate" {
-  bucket = "group01-cloudwise-tfstate-workshop-terraform"
-
-  tags = {
-    Name = "group01-terraform-bucket"
-  }
-}
-
-resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
-  bucket = aws_s3_bucket.terraform_tfstate.id
-  rule {
-    object_ownership = "ObjectWriter"
-  }
-}
-
-resource "aws_s3_bucket_acl" "bucket_acl" {
-  depends_on = [ aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership ]
-
-  bucket = aws_s3_bucket.terraform_tfstate.id
-  acl = "private"
-}
-
-resource "aws_s3_bucket_versioning" "s3_versioning" {
-  bucket = aws_s3_bucket.terraform_tfstate.bucket
-
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "s3_enc" {
-  bucket = aws_s3_bucket.terraform_tfstate.bucket
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "terraform_tfstate" {
-  bucket = aws_s3_bucket.terraform_tfstate.id
-
-  block_public_acls = true
-  block_public_policy = true
-  ignore_public_acls = true
-}
-
-#################################################
-# create a dynamodb resource
-#################################################
-
-resource "aws_dynamodb_table" "terraform_locks" {
-  name = "terraform-locks"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-
-  tags = {
-    Name = "group01-terraform-locks"
   }
 }
 
@@ -535,4 +432,3 @@ resource "aws_ecs_service" "app" {
     container_port = 8000
   }
 }
-
