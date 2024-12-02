@@ -5,7 +5,6 @@ resource "aws_ecs_task_definition" "web" {
     {
       name = "cloud-wise-rails-app",
       image = "${aws_ecr_repository.ecr.repository_url}:${coalesce(data.aws_ecr_image.image.image_tags[0], "latest")}"
-      # image = ""
       region = var.region
       command = ["rails", "s", "-b", "0.0.0.0"]
 
