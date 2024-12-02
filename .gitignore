@@ -28,3 +28,15 @@ yarn-debug.log*
 .env*
 !.env.example
 docker-compose.override.yml
+
+# Ignore terraform vars
+terraform/bootstrap/.terraform
+terraform/bootstrap/.terraform.lock.hcl
+terraform/bootstrap/terraform.tfstate
+terraform/bootstrap/terraform.tfstate.backup
+
+terraform/foundation/.terraform
+terraform/foundation/.terraform.lock.hcl
+terraform/foundation/terraform.tfstate
+terraform/foundation/terraform.tfstate.backup
+terraform/foundation/terraform.tfvars

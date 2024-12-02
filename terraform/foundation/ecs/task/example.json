@@ -1,0 +1,26 @@
+[
+    {
+      "name": "${name}",
+      "image": "${image}",
+      "essential": true,
+      "environment": ${jsonencode(env_variables)},
+      "secrets": ${jsonencode(secrets_variables)},
+      "links": [],
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "command": ${jsonencode(command)},
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "${log_group}",
+          "awslogs-region": "${region}",
+          "awslogs-stream-prefix": "app"
+        }
+      }
+    }
+  ]
