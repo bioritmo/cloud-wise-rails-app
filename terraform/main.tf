@@ -4,11 +4,11 @@ terraform {
   }
 
   # backend "s3" {
-  #   profile        = "sandbox"
-  #   region         = "us-east-1"
-  #   bucket         = "cfl-bucket"
-  #   key            = "/terraform.tfstate"
-  #   dynamodb_table = "cfl-tf-locks"
+  #  profile        = "sandbox"
+  #  region         = "us-east-1"
+  #  bucket         = "cfl-bucket"
+  #  key            = "terraform.tfstate"
+  #  dynamodb_table = "cfl-tf-locks"
   # }
 }
 
@@ -219,7 +219,7 @@ resource "aws_s3_bucket_versioning" "cfl_bucket_versioning" {
 
 ## Block public access in bucket
 resource "aws_s3_bucket_public_access_block" "cfl_block_public_access" {
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.cfl_bucket.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -227,9 +227,10 @@ resource "aws_s3_bucket_public_access_block" "cfl_block_public_access" {
 }
 
 # DynamoDB
-data "aws_dynamodb_table" "cfl_tf_locks" {
+resource "aws_dynamodb_table" "cfl_tf_locks" {
   name           = "cfl-tf-locks"
   hash_key       = "LockID"
+  billing_mode   = "PAY_PER_REQUEST"
 
   attribute {
     name = "LockID"
