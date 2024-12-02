@@ -204,6 +204,54 @@ resource "aws_route_table_association" "rta_public" {
   route_table_id = aws_route_table.rt_public[each.key].id
 }
 
+# S3 Bucket
+resource "aws_s3_bucket" "cfl_bucket" {
+  bucket = "cfl-bucket"
+
+    tags = {
+    Name = "03-cfl-bucket"
+  }
+}
+
+## Bucket ACL
+resource "aws_s3_bucket_acl" "cfl_bucket_acl" {
+  bucket = aws_s3_bucket.cfl_bucket.id
+  acl    = "private"
+}
+
+## Bucket Versioning
+resource "aws_s3_bucket_versioning" "cfl_bucket_versioning" {
+  bucket = aws_s3_bucket.cfl_bucket.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+## Block public access in bucket
+resource "aws_s3_bucket_public_access_block" "cfl_block_public_access" {
+  bucket = aws_s3_bucket.cfl_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+}
+
+resource "aws_dynamodb_table" "cfl_tf_locks" {
+  name           = "cfl-tf-locks"
+  hash_key       = "LockID"
+  billing_mode   = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = {
+    Name = "03-cfl-tf-locks"
+  }
+}
+
 # Security Group
 resource "aws_security_group" "sec_group" {
   vpc_id = aws_vpc.main.id
