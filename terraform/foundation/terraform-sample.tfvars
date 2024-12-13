@@ -1,0 +1,7 @@
+region  = "us-east-1"
+profile = ""
+vpc_cidr_block = ""
+access_key = ""
+secret_key = ""
+database_name = ""
+database_username = ""
